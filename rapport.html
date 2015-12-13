@@ -3,11 +3,13 @@
 <title>Rapport PJE : Twitter</title>
 <meta charset="UTF-8"/>
 <xmp theme="united" style="display:none;">
+<div class="corner-ribbon top-right black">Version PDF</div>
 # Rapport PJE
 # Twitter Sentiment Analyzer
 Julien Leclercq & Jean-Frédéric Durand
 
-----
+
+<div class="jfborder"></div>
 ## Présentation du projet
 
 ### I / Problématique
@@ -33,10 +35,13 @@ Le projet réalisé à été développé en Ruby on rails avec les paquets suiva
  - CSS : Bootstrap
  - API : Twitter (for ruby on rails)
 
-Pour ce projet nous avons opté pour un modèle MVC.
+#### Modèle de conception
+Pour ce projet nous avons opté pour un modèle MVC natif et représentatif de l'environnement Ruby.
+
+
 A REMPLIR
 
-----
+<div class="jfborder"></div>
 ## Détails des travaux effectués
 
 ### I / API Twitter
@@ -58,6 +63,17 @@ On y retrouve les principales fonctions qui sont :
  - remove_hashtag : a faire
 
 #### Construction de la base
+La construction de la base est visible depuis le répertoire db/migrate du projet.
+Nous y définissons la création de la table de stockage d'un tweet selon les critères suivants :
+
+ - tweet_id : l'identifiant twitter du tweet
+ - twittos : la personne qui a publié le tweet
+ - text : le corps du tweet
+ - annotation : l'entier défini pour la classification
+ - created_at : date de création dans la base
+ - updated_at : date de mise a jour dans la base
+
+A noter que nous avons du augmenter la taille des entier par défaut de sqlite3 à 20.En effet le tweet_id à actuellement une longueur de 18 caractères.
 
 ### III / Algorithmes de classifications
 
@@ -73,4 +89,48 @@ mettre des copies d'écrans et décrire l'utilisation
 </xmp>
 
 <script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+
 </html>
+<style>
+.jfborder{
+	border: solid 1px grey;
+}
+
+.corner-ribbon{
+  z-index: 30;
+  width: 200px;
+  background: #e43;
+  position: absolute;
+  top: 25px;
+  left: -50px;
+  text-align: center;
+  line-height: 50px;
+  letter-spacing: 1px;
+  color: #f0f0f0;
+  transform: rotate(-45deg);
+  -webkit-transform: rotate(-45deg);
+}
+
+.corner-ribbon.sticky{
+  position: fixed;
+}
+
+.corner-ribbon.top-right{
+  top: 25px;
+  right: -50px;
+  left: auto;
+  transform: rotate(45deg);
+  -webkit-transform: rotate(45deg);
+}
+
+.corner-ribbon.white{background: #f0f0f0; color: #555;}
+.corner-ribbon.black{background: #333;}
+.corner-ribbon.grey{background: #999;}
+.corner-ribbon.blue{background: #39d;}
+.corner-ribbon.green{background: #2c7;}
+.corner-ribbon.turquoise{background: #1b9;}
+.corner-ribbon.purple{background: #95b;}
+.corner-ribbon.red{background: #e43;}
+.corner-ribbon.orange{background: #e82;}
+.corner-ribbon.yellow{background: #ec0;}
+</style>
