@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html>
-<title>Rapport PJE : Twitter</title>
+<title>Rapport PJE : Twitter Sentiment Analyzer</title>
 <meta charset="UTF-8"/>
 <xmp theme="united" style="display:none;">
-<div class="corner-ribbon top-right black">Version PDF</div>
+<div class="corner-ribbon top-right black"><a href="rapport.pdf">Version PDF</a></div>
 <img style="float: right;" src="img/logoLille1.png">
 # Rapport PJE
 # Twitter Sentiment Analyzer
 Julien Leclercq & Jean-Frédéric Durand
+
+[Lien vers le Github](http://github.com/whispyy/TwitterSentimentAnalyzer)
 
 
 <div class="jfborder"></div>
@@ -53,7 +55,13 @@ Le projet réalisé a été développé en Ruby on rails avec les paquets suivan
  - API : Twitter (for ruby on rails)
 
 #### Modèle de conception
-Pour ce projet nous avons opté pour un modèle _MVC_ natif et représentatif de l'environnement Ruby. Il sera ainsi facile de retrouver les principales classes dans le modèle. En effet nous faisons nos recherches via 
+Pour ce projet nous avons opté pour un modèle _MVC_ natif et représentatif de l'environnement Ruby. Il sera ainsi facile de retrouver les principales classes dans le modèle. 
+Les classes sont :
+ - TweetSearch : Classe de la fonction recherche
+ - KeywordsAnalysis : Classe de la fonction de classification par mots-clés
+ - KNN : Classe de la fonction de classification par Knn
+ - Bayes : Classe de la fonction de classification par Bayes
+
 Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _ActiveRecord_. Ceci nous permet de faire beaucoup de requête et de les modifier par la suite simplement.
 
 
@@ -116,7 +124,7 @@ Nous avons récupéré les fichiers positif.txt et negatif.txt que vous trouvere
 mettre des copies d'écrans et décrire l'utilisation
 
 ### V / Conclusion
-Ce projet nous a permis de découvrir une approche du "machine learning" et du "big data". En effet nous avons pu par l'intermédiaire des différents algorithmes, mettre en oeuvre une classification. De plus nous avons découvert la limite de ces algorithmes, notamment dû à la complexité du langage qu'est le français.
+Ce projet nous a permis de découvrir une approche du "machine learning" et du "big data". En effet nous avons pu par l'intermédiaire des différents algorithmes, mettre en oeuvre une classification. De plus nous avons découvert la limite de ces algorithmes, notamment dûe à la complexité du langage qu'est le français.
 
 <div class="jfborder"></div>
 ## Glossaire
