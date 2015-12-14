@@ -1,9 +1,25 @@
+<img style="float: right;" src="img/logoLille1.png">
 # Rapport PJE
 # Twitter Sentiment Analyzer
 Julien Leclercq & Jean-Frédéric Durand
 
 
-----
+-----
+## Sommaire
+
+ * ### Présentation du projet
+   * #### I / Problématique
+   * #### II / Architecture de l'application
+ * ### Détails des travaux effectués
+   * #### I / API Twitter
+   * #### II / Base d'apprentissage
+   * #### III / Algorithmes de classifications
+   * #### IV / Interface graphique
+   * #### V / Conclusion
+ * ### Glossaire
+
+
+-----
 ## Présentation du projet
 
 ### I / Problématique
@@ -30,12 +46,15 @@ Le projet réalisé à été développé en Ruby on rails avec les paquets suiva
  - API : Twitter (for ruby on rails)
 
 #### Modèle de conception
-Pour ce projet nous avons opté pour un modèle MVC natif et représentatif de l'environnement Ruby.
+Pour ce projet nous avons opté pour un modèle MVC natif et représentatif de l'environnement Ruby. 
+
+Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _ActiveRecord_.
 
 
-A REMPLIR
+> A REMPLIR
 
-----
+
+-----
 ## Détails des travaux effectués
 
 ### I / API Twitter
@@ -66,6 +85,7 @@ Nous y définissons la création de la table de stockage d'un tweet selon les cr
  - annotation : l'entier défini pour la classification
  - created_at : date de création dans la base
  - updated_at : date de mise a jour dans la base
+ - hand_annoted : un boolean qui renvoie vrai si le tweet à été annoté à la main
 
 A noter que nous avons du augmenter la taille des entier par défaut de sqlite3 à 20.En effet le tweet_id à actuellement une longueur de 18 caractères.
 
@@ -82,3 +102,11 @@ De plus nous avons défini les les données de dates (created_at,updated_at) com
 ### IV / Interface graphique
 
 mettre des copies d'écrans et décrire l'utilisation
+
+### V / Conclusion
+
+
+----
+## Glossaire
+
+_ActiveRecord_ : Encapsulage des données dans une classe pour la lecture ou l'écriture de données en base. Lorsque l'on met à jour un objet, son objet en base aussi. De plus la classe implémente des accesseurs pour chaque attribut.

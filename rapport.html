@@ -31,20 +31,21 @@ Julien Leclercq & Jean-Frédéric Durand
 ### I / Problématique
 
 #### Objectif
-L'objectif de ce PJE est de manière globale d'analyser l'attitude d'un tweet, en fonction de son contenu. Étant dans la région Nord, Pas-de-calais et proche de la Belgique, nous avons estimé que culturellement parlant faire une analyse autours du sujet qu'est la bière et les frites nous permettrait de révéler l'attitude d'une majorité de tweets "locaux".
+L'objectif de ce PJE est de manière globale d'analyser l'attitude d'un tweet, en fonction de son contenu. Étant dans la région Nord, Pas-de-Calais et proche de la Belgique, nous avons estimé que culturellement parlant faire une analyse autours du sujet qu'est la bière et les frites nous permettrait de révéler l'attitude d'une majorité de tweets "locaux".
+Notre objectif est aussi de comparer les différents algorithmes de classification.
 
 #### Notion de classification
 Lors de ce PJE la classification s'est faite selon la norme suivante. Lors de la récupération des tweets on index un nombre à -1.
 Une fois annoté il se verra affecté un nombre : 0, 1, 2 si le tweet est respectivement négatif, neutre ou positif.
-Par la suite ce classement nous permettra de catégoriser les tweets à visée positive, négative ou neutre.
+Par la suite ce classement nous permettra de catégoriser les tweets à visée positive, négative ou neutre par l'intermédiaire des différents algorithmes proposés.
 
 #### Marge d'erreur
-La classification automatique n'est cependant pas parfaite. En effet il est très difficile de classifier certains tweets tel que les tweets à connotation sarcastique par exemple. Ou encore l'ironie étant donné que ces types de tweets sont sémantiquement très proche des tweets ayant une visée au premier degré.
+La classification automatique n'est cependant pas parfaite. En effet il est très difficile de classifier certains tweets tel que les tweets à connotation sarcastique par exemple; ou encore l'ironie étant donné que ces types de tweets sont sémantiquement très proche des tweets ayant une visée au premier degré.
 
 ### II / Architecture de l'application
 
 #### Paquetage
-Le projet réalisé à été développé en Ruby on rails avec les paquets suivant :
+Le projet réalisé a été développé en Ruby on rails avec les paquets suivant :
 
  - Base de donnée : SQLITE3
  - HTML : Slim
@@ -52,34 +53,37 @@ Le projet réalisé à été développé en Ruby on rails avec les paquets suiva
  - API : Twitter (for ruby on rails)
 
 #### Modèle de conception
-Pour ce projet nous avons opté pour un modèle MVC natif et représentatif de l'environnement Ruby. 
+Pour ce projet nous avons opté pour un modèle _MVC_ natif et représentatif de l'environnement Ruby. Il sera ainsi facile de retrouver les principales classes dans le modèle. En effet nous faisons nos recherches via 
+Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _ActiveRecord_. Ceci nous permet de faire beaucoup de requête et de les modifier par la suite simplement.
 
-Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _ActiveRecord_.
-
-
-> A REMPLIR
 
 
 <div class="jfborder"></div>
 ## Détails des travaux effectués
 
 ### I / API Twitter
-Premièrement, on a configuré le client de l'API twitter dans un controller d'initialisation : 
-app/controllers/concerns application_concern.rb.
+Premièrement, on a configuré le client de l'API twitter dans un contrôleur d'initialisation : 
+app/controllers/concerns/application_concern.rb.
 
 Deuxièmement, à l'aide du tweet_search_controller.rb nous effectuons une requête d'envoi de recherche de tweet via un paramètre de recherche. Ce paramètre de recherche peut être un mot clé ou un pseudo.
+Il est à noter que nous avons défini la langue lors de l'envoi de la requête, nous ne récupérons donc que les tweets en français.
 
 ### II / Base d'apprentissage
 
 #### Nettoyage des données
 Le nettoyage des tweets s'effectue dans le repertoire : app/models/tweets.rb.
-On y retrouve les principales fonctions qui sont :
+On y retrouve les principales fonctions de suppression qui sont :
 
  - remove_url : Supprime un lien url fournit dans un tweet
- - remove_rt : a faire
- - remove_quotes : a faire
- - remove_arobase : a faire
- - remove_hashtag : a faire
+ - remove_rt : Supprime les caractères "RT" lors d'un retweet
+ - remove_arobase : Supprime les @ d'un tweet
+ - remove_hashtag : Supprime les # d'un tweet
+ - remove_quotes : Supprime les guillemets d'un tweet
+
+S'ajoute à cela quelques transformations :
+
+ - transform_price : Transforme un prix en euro par X
+ - different_smiley : Suppression des smiley positif et négatif lorsqu'ils sont regroupés dans un même tweets
 
 #### Construction de la base
 La construction de la base est visible depuis le répertoire db/migrate du projet.
@@ -99,7 +103,9 @@ De plus nous avons défini les les données de dates (created_at,updated_at) com
 
 ### III / Algorithmes de classifications
 
-#### mots-clés
+#### Mots-clés
+Nous avons récupéré les fichiers positif.txt et negatif.txt que vous trouverez dans lib/tasks sous les noms positive_word.rb et negative_word.rb contenant la liste des mots-clés mise en forme pour Ruby.
+
 
 #### KNN
 
@@ -110,10 +116,16 @@ De plus nous avons défini les les données de dates (created_at,updated_at) com
 mettre des copies d'écrans et décrire l'utilisation
 
 ### V / Conclusion
-
+Ce projet nous a permis de découvrir une approche du "machine learning" et du "big data". En effet nous avons pu par l'intermédiaire des différents algorithmes, mettre en oeuvre une classification. De plus nous avons découvert la limite de ces algorithmes, notamment dû à la complexité du langage qu'est le français.
 
 <div class="jfborder"></div>
 ## Glossaire
+
+_MVC_ : Model-View-Controller est un patron d'architecture logicielle permettant de répondre aux besoins d'une application interactive. Les fonctions sont réparties en trois parties :
+
+ * un Modèle de données permettant de traiter des données provenant de la base
+ * une Vue représentant l'interface de utilisateur
+ * un Contrôleur permettant de faire la liaison entre le Modèle et la vue
 
 _ActiveRecord_ : Encapsulage des données dans une classe pour la lecture ou l'écriture de données en base. Lorsque l'on met à jour un objet, son objet en base aussi. De plus la classe implémente des accesseurs pour chaque attribut.
 </xmp>
