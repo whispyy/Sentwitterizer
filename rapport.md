@@ -8,16 +8,16 @@ Julien Leclercq & Jean-Frédéric Durand
 ----
 ## Sommaire
 
- * ### Présentation du projet
-   * #### I / Problématique
-   * #### II / Architecture de l'application
- * ### Détails des travaux effectués
-   * #### I / API Twitter
-   * #### II / Base d'apprentissage
-   * #### III / Algorithmes de classifications
-   * #### IV / Interface graphique
-   * #### V / Conclusion
- * ### Glossaire
+ * Présentation du projet
+   * I / Problématique
+   * II / Architecture de l'application
+ * Détails des travaux effectués
+   * I / API Twitter
+   * II / Base d'apprentissage
+   * III / Algorithmes de classifications
+   * IV / Interface graphique
+   * V / Conclusion
+ * Glossaire
 
 
 ----
@@ -51,7 +51,9 @@ Le projet réalisé a été développé en Ruby on rails avec les paquets suivan
 Pour ce projet nous avons opté pour un modèle _MVC_ natif et représentatif de l'environnement Ruby. Il sera ainsi facile de retrouver les principales classes dans le modèle. 
 Les classes sont :
  - TweetSearch : Classe de la fonction recherche
+ - Analysis : Classe de gestion des analyses de classification
  - KeywordsAnalysis : Classe de la fonction de classification par mots-clés
+ - DistanceMeasures : Mesure les distance pour Knn
  - KNN : Classe de la fonction de classification par Knn
  - Bayes : Classe de la fonction de classification par Bayes
 
@@ -59,7 +61,7 @@ Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _
 
 
 
-----
+<div class="jfborder"></div>
 ## Détails des travaux effectués
 
 ### I / API Twitter
@@ -107,8 +109,17 @@ De plus nous avons défini les les données de dates (created_at,updated_at) com
 #### Mots-clés
 Nous avons récupéré les fichiers positif.txt et negatif.txt que vous trouverez dans lib/tasks sous les noms positive_word.rb et negative_word.rb contenant la liste des mots-clés mise en forme pour Ruby.
 
+L'algorithme est simple on va effectuer une boucle sur tous les Tweets de la base en recherchant les mots clés du tableau. Lorsqu'un mot clé est trouvé on augmente sa cardinalité s'il est positif et on l'a baisse s'il est négatif.
+
 
 #### KNN
+
+##### Mesures de distances
+On va rechercher les distances entre les tweets. 
+La fonction renvoie un tableau de distances.
+
+##### Le plus proche voisin
+Le calcul du plus proche voisin effectue une recherche parmis les distances définies par la mesure des distances.
 
 #### Bayes
 
@@ -119,7 +130,7 @@ mettre des copies d'écrans et décrire l'utilisation
 ### V / Conclusion
 Ce projet nous a permis de découvrir une approche du "machine learning" et du "big data". En effet nous avons pu par l'intermédiaire des différents algorithmes, mettre en oeuvre une classification. De plus nous avons découvert la limite de ces algorithmes, notamment dûe à la complexité du langage qu'est le français.
 
-----
+<div class="jfborder"></div>
 ## Glossaire
 
 _MVC_ : Model-View-Controller est un patron d'architecture logicielle permettant de répondre aux besoins d'une application interactive. Les fonctions sont réparties en trois parties :
