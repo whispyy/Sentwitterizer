@@ -60,10 +60,10 @@ D'autres paquets ont été utilisés pour nous simplifier la réalisation de l'i
 #### Modèle de conception
 Pour ce projet nous avons opté pour un modèle _MVC_ natif et représentatif de l'environnement Ruby. Il sera ainsi facile de retrouver les principales classes dans le modèle. 
 Les classes sont :
- - TweetSearch : Classe de la fonction recherche
- - Analysis : Classe de gestion des analyses de classification
+ - TweetSearch : Classe de gestion des recherches de tweets
+ - TweetAnalysis : Classe de gestion des analyses de classification
  - KeywordsAnalysis : Classe de la fonction de classification par mots-clés
- - KNN : Classe de la fonction de classification par Knn
+ - KnnAnalysis : Classe de la fonction de classification par Knn
  - Bayes : Classe de la fonction de classification par Bayes
 
 Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _ActiveRecord_. Ceci nous permet de faire beaucoup de requête et de les modifier par la suite simplement.
@@ -77,9 +77,10 @@ Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _
 Premièrement, on a configuré le client de l'API twitter dans un contrôleur d'initialisation : 
 app/controllers/concerns/application_concern.rb.
 
-Deuxièmement, à l'aide du tweet_search_controller.rb nous effectuons une requête d'envoi de recherche de tweet via un paramètre de recherche. Ce paramètre de recherche peut être un mot clé ou un pseudo.
+Deuxièmement, à l'aide du tweet_search_controller.rb nous effectuons une requête d'envoi de recherche de tweet via un paramètre de recherche. Ce paramètre de recherche peut être un mot,un pseudo ou encore un groupe de mots.
 Il est à noter que nous avons défini la langue lors de l'envoi de la requête, nous ne récupérons donc que les tweets en français.
 La méthode "create" nous permet quant-à elle d'effectuer la requête via l'API et d'enregistrer ces données en base.
+Il est également important de souligner que nous avons défini un critère de recherche complémentaire : Le nombre de tweets à enregistrer par recherche. En effet si nous ne limitons pas le nombre de tweet comprenant le mot clés, celle-ci peut s'avérer très longue et lourde à rentrer en base.
 
 ### II / Base d'apprentissage
 
@@ -160,8 +161,10 @@ Nous avons fait une petite analyse des tweets par mots-clés et avons remarqué 
 | 💯 | 1F4AF | F0 9F 92 AF | HUNDRED POINTS SYMBOL | Positif |
 | 😉 | 1F609 | F0 9F 98 89 | WINKING FACE | Positif |
 | 😇 | 1F607 | F0 9F 98 87 | SMILING FACE WITH HALO | Positif |
+| 😏 | 1F60F | F0 9F 98 8F | SMIRKING FACE | Positif |
 | 😨 | 1F628 | F0 9F 98 A8 | FEARFUL FACE | Negatif |
 | 😒 | 1F612 | F0 9F 98 92 | UNAMUSED FACE | Negatif |
+| 😁 | 1F601 | F0 9F 98 81 | GRINNING FACE WITH SMILING EYES | Positif |
 
 #### KNN
 
