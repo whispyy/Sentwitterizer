@@ -4,6 +4,7 @@
 Julien Leclercq & Jean-Frédéric Durand
 
 [Lien vers le Github](http://github.com/whispyy/TwitterSentimentAnalyzer)
+[Lien vers l'Application](http://52.31.122.230)
 
 ----
 ## Sommaire
@@ -16,11 +17,11 @@ Julien Leclercq & Jean-Frédéric Durand
    * II / Base d'apprentissage
    * III / Algorithmes de classifications
    * IV / Interface graphique
-   * V / Conclusion
  * Glossaire
 
 
 ----
+<div class="jfborder"></div>
 ## Présentation du projet
 
 ### I / Problématique
@@ -47,14 +48,15 @@ Le projet réalisé a été développé en Ruby on rails avec les paquets suivan
  - CSS : Bootstrap
  - API : Twitter (for ruby on rails)
 
+D'autres paquets ont été utilisés pour nous simplifier la réalisation de l'interface graphique. Ces paquets sont listés dans le "Gemfile" à la racine du projet. 
+
 #### Modèle de conception
 Pour ce projet nous avons opté pour un modèle _MVC_ natif et représentatif de l'environnement Ruby. Il sera ainsi facile de retrouver les principales classes dans le modèle. 
 Les classes sont :
- - TweetSearch : Classe de la fonction recherche
- - Analysis : Classe de gestion des analyses de classification
+ - TweetSearch : Classe de gestion des recherches de tweets
+ - TweetAnalysis : Classe de gestion des analyses de classification
  - KeywordsAnalysis : Classe de la fonction de classification par mots-clés
- - DistanceMeasures : Mesure les distance pour Knn
- - KNN : Classe de la fonction de classification par Knn
+ - KnnAnalysis : Classe de la fonction de classification par Knn
  - Bayes : Classe de la fonction de classification par Bayes
 
 Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _ActiveRecord_. Ceci nous permet de faire beaucoup de requête et de les modifier par la suite simplement.
@@ -68,8 +70,10 @@ Pour le cas de l'enregistrement en base et de la lecture, nous fonctionnant en _
 Premièrement, on a configuré le client de l'API twitter dans un contrôleur d'initialisation : 
 app/controllers/concerns/application_concern.rb.
 
-Deuxièmement, à l'aide du tweet_search_controller.rb nous effectuons une requête d'envoi de recherche de tweet via un paramètre de recherche. Ce paramètre de recherche peut être un mot clé ou un pseudo.
+Deuxièmement, à l'aide du tweet_search_controller.rb nous effectuons une requête d'envoi de recherche de tweet via un paramètre de recherche. Ce paramètre de recherche peut être un mot,un pseudo ou encore un groupe de mots.
 Il est à noter que nous avons défini la langue lors de l'envoi de la requête, nous ne récupérons donc que les tweets en français.
+La méthode "create" nous permet quant-à elle d'effectuer la requête via l'API et d'enregistrer ces données en base.
+Il est également important de souligner que nous avons défini un critère de recherche complémentaire : Le nombre de tweets à enregistrer par recherche. En effet si nous ne limitons pas le nombre de tweet comprenant le mot clés, celle-ci peut s'avérer très longue et lourde à rentrer en base.
 
 ### II / Base d'apprentissage
 
@@ -89,7 +93,9 @@ S'ajoute à cela quelques transformations :
  - different_smiley : Suppression des smiley positif et négatif lorsqu'ils sont regroupés dans un même tweets
 
 #### Construction de la base
-La construction de la base est visible depuis le répertoire db/migrate du projet.
+
+##### Table de Tweets
+La construction de la base est visible depuis le répertoire db/schema.rb du projet.
 Nous y définissons la création de la table de stockage d'un tweet selon les critères suivants :
 
  - tweet_id : l'identifiant twitter du tweet
@@ -99,10 +105,32 @@ Nous y définissons la création de la table de stockage d'un tweet selon les cr
  - created_at : date de création dans la base
  - updated_at : date de mise a jour dans la base
  - hand_annoted : un boolean qui renvoie vrai si le tweet à été annoté à la main
+ - tweet_search_id : l'identifiant de la recherche qui nous permet de trier les tweets par recherche.
 
 A noter que nous avons du augmenter la taille des entier par défaut de sqlite3 à 20.En effet le tweet_id à actuellement une longueur de 18 caractères.
 
 De plus nous avons défini les les données de dates (created_at,updated_at) comme facultatives.
+
+##### Table de recherches
+
+Une deuxième table nous permet de sauvegarder les recherches précédemment effectuées. Cette table s'appelle tweet_searches et contient :
+
+ - full_text : Le nom de la recherche entré
+ - created_at : date de création dans la base
+ - updated_at : date de mise a jour dans la base
+
+L'objectif de cette table de recherche est premièrement de sauvegarder nos recherches pour y accéder plus tard, mais surtout de nous permettre de mettre à jour les recherches par la suite.
+
+##### Table d'analyses
+
+Une troisième table nous permet de sauvegarder les analyses effectués sur les recherches. Cette table s'appelle tweet_analyses et est contitué des attributs suivants :
+
+ - tweet_search_id : l'identifant de recherche des tweets.
+ - type : le type d'analyse effectué 
+ - neutral_tweets : nombre de tweets neutres
+ - positive_tweets : nombre de tweets positif
+ - negative_tweets : nombre de tweets négatif
+ - last_performed : Date de dernière analyse
 
 ### III / Algorithmes de classifications
 
@@ -111,24 +139,60 @@ Nous avons récupéré les fichiers positif.txt et negatif.txt que vous trouvere
 
 L'algorithme est simple on va effectuer une boucle sur tous les Tweets de la base en recherchant les mots clés du tableau. Lorsqu'un mot clé est trouvé on augmente sa cardinalité s'il est positif et on l'a baisse s'il est négatif.
 
+Nous avons fait une petite analyse des tweets par mots-clés et avons remarqué que pas mal d'entres eux comportaient des émoticones "spéciales". Nous avons donc ajouté à la liste ceux que nous avons retrouvé la correspondance UTF-8.
+
+| Symbole | Code | UTF-8 | Nom | Annotation |
+|---|---|---|---|---|
+| 👍 | 1F44D | F0 9F 91 8D | THUMBS UP SIGN | Positif |
+| 💋 | 1F48B | F0 9F 92 8B | KISS MARK | Positif |
+| 🎉 | 1F389 | F0 9F 8E 89 | PARTY POPPER | Positif |
+| 🍻 | 1F37B | F0 9F 8D BB | CLINKING BEER MUGS  | Positif |
+| 👌 | 1F44C | F0 9F 91 8C | OK HAND SIGN | Positif |
+| 😍 | 1F60D | F0 9F 98 8D | SMILING FACE WITH HEART-SHAPED EYES | Positif |
+| 😂 | 1F602 | F0 9F 98 82 | FACE WITH TEARS OF JOY | Positif |
+| ❤ | 2764 | E2 9D A4 | HEAVY BLACK HEART | Positif |
+| 💯 | 1F4AF | F0 9F 92 AF | HUNDRED POINTS SYMBOL | Positif |
+| 😉 | 1F609 | F0 9F 98 89 | WINKING FACE | Positif |
+| 😇 | 1F607 | F0 9F 98 87 | SMILING FACE WITH HALO | Positif |
+| 😏 | 1F60F | F0 9F 98 8F | SMIRKING FACE | Positif |
+| 😨 | 1F628 | F0 9F 98 A8 | FEARFUL FACE | Negatif |
+| 😒 | 1F612 | F0 9F 98 92 | UNAMUSED FACE | Negatif |
+| 😁 | 1F601 | F0 9F 98 81 | GRINNING FACE WITH SMILING EYES | Positif |
 
 #### KNN
 
-##### Mesures de distances
-On va rechercher les distances entre les tweets. 
-La fonction renvoie un tableau de distances.
+KnnAnalysis nécéssite d'avoir annoté au préalable au minimum 20 tweets.
 
-##### Le plus proche voisin
-Le calcul du plus proche voisin effectue une recherche parmis les distances définies par la mesure des distances.
+##### Distance
+La fonction définie permet de calculer la distance entre deux tweets. Pour cela on sépare chaque mots des tweets et on les comptabilise dans le résultat.
+Cette fonction renvoie la distance entre deux tweets.
+
+##### Plus proche voisin
+L'étape suivante est de trouver des voisins. On va donc appliquer notre fonctions distance à tous les tweets annoté dans un premier temps, puis trier les voisins par ordre de proximité à l'aide de sous fonctions. Les plus proches voisins de ces tweets vont être déplacés dans des catégories négatifs, neutres et positifs.
+
+##### Base de traitement
+Maintenant que notre base d'apprentissage est construite. On va répéter l'opération pour les tweets non annotés en se basant sur les tweets déjà annotés et classés. A savoir : calcul des distances entres les tweets. Trie des distances pour trouver les plus proches voisins, puis attribution des catégories pour ces tweets.
 
 #### Bayes
+Non fonctionnel.
 
 ### IV / Interface graphique
 
-mettre des copies d'écrans et décrire l'utilisation
+#### Vue de la page d'accueil
+<img src="img/4-accueil.png" alt=""/>
 
-### V / Conclusion
-Ce projet nous a permis de découvrir une approche du "machine learning" et du "big data". En effet nous avons pu par l'intermédiaire des différents algorithmes, mettre en oeuvre une classification. De plus nous avons découvert la limite de ces algorithmes, notamment dûe à la complexité du langage qu'est le français.
+Utilisation : Entrer une recherche dans le premier champ, un nombre de tweets maximum a enregistrer en base dans le deuxième champs.
+
+#### Vue de la page des précédentes recherches
+<img src="img/4-recherchesTweet.png" alt=""/>
+
+Utilisation : Toutes les recherches sont enregistrées dans cette page. Il est alors possible de cliquer sur une recherche pour y afficher la liste des tweets et les annoter à la main. Egalement possible d'afficher les différentes analyses ou d'exporter en CSV
+
+#### Vue d'une analyse
+<img src="img/4-analyseKeyword.png" alt=""/>
+
+Utilisation : On retrouve ici les différents diagrammes de statistiques. D'une part un diagramme cammembert en pourcentage et d'autre part un diagramme baton en comptabilisant les tweets positifs, négatifs et neutres.
+Des détails sont également disponibles.
 
 <div class="jfborder"></div>
 ## Glossaire
